@@ -1,0 +1,59 @@
+version: '3'
+services:
+    mysql:
+      build: ./docker/mysql/
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: django
+        MYSQL_USER: django
+        MYSQL_PASSWORD: django
+        MYSQL_DATABASE: django
+      volumes:
+        - mysql:/var/lib/mysql:z
+        
+    web:
+      build: .
+      command: sh -c "./wait-for-it.sh mysql:3306; python3 manage.py runserver 0.0.0.0:8000"
+      ports:
+          - '8080:8000'
+      depends_on:
+          - mysql
+          - chrome
+          - selenium-hub
+      volumes:
+          - '.:/var/www/webapp'
+
+    selenium-hub:
+      image: selenium/hub:3.14.0-europium
+      ports:
+          - 4444:4444
+
+    chrome:
+      image: selenium/node-chrome:3.14.0-europium
+      depends_on:
+        - selenium-hub
+      environment:
+        HUB_HOST: selenium-hub
+        HUB_PORT: 4444
+      volumes:
+        - /dev/shm:/dev/shm:z
+
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      restart: always
+      environment:
+        PMA_ARBITRARY: 1
+        PMA_HOST: mysql
+        PMA_USER: root
+        PMA_PASSWORD: django
+      restart: always
+      links:
+        - mysql
+      ports:
+        - 8081:80
+      volumes:
+        - ./docker/phpmyadmin/sessions:/sessions
+
+volumes:
+  mysql:
+

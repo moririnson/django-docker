@@ -1,0 +1,8 @@
+Django>=2.0.1
+selenium
+PyMySQL
+django-environ
+mysqlclient
+funcy
+requests
+beautifulsoup4
