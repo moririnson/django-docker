@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-    echo "アプリケーション名を指定してください。（引数は一つだけにしてください。）"
+    echo "Specify application name.（You must specify only one arg.）"
     exit 1
 fi
 
